@@ -189,7 +189,7 @@ public class PunkNetAPI : BaseUnityPlugin
         {
             PunkNet.HandleMessage(message);
             // Handle the message on the client
-            Log.LogInfo($"Client received message: {message.netId}: {message.modSource}. {message.data["dick"]}");
+            Log.LogInfo($"Client received message: {message.netId}: {message.modSource}.");
         }
     }
 
@@ -303,7 +303,7 @@ public static class PunkNet
     /// </summary>
     /// <param name="targetNetId"></param>
     /// <param name="message"></param>
-    public static void ToTargetMessage(uint targetNetId, PunkNetMessage message)
+    public static void ToTargetMessage(uint targetNetId, string modSource, Dictionary<string, object> data)
     {
         if (!NetworkServer.active)
         {
@@ -315,6 +315,10 @@ public static class PunkNet
 
         if (connection != null)
         {
+            Player player = Player._mainPlayer;
+            uint netId = player.netId;
+            var message = new PunkNetMessage(netId, modSource, data);
+            NetworkServer.SendToAll(message);
             connection.Send(message);
             Debug.Log($"[PunkNetAPI] Send message to netId: {targetNetId}");
         }
